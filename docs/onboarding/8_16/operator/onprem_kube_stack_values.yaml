@@ -50,8 +50,10 @@ collectors:
           endpoints:
           - ${env:ELASTIC_ENDPOINT}
           api_key: ${env:ELASTIC_API_KEY}
-          tls:
-            insecure_skip_verify: true
+          logs_dynamic_index:
+            enabled: true
+          # tls:
+          #   insecure_skip_verify: true
           mapping:
             mode: otel
       processors:
@@ -183,18 +185,16 @@ collectors:
           api_key: ${env:ELASTIC_API_KEY}
           logs_dynamic_index:
             enabled: true
-          tls:
-            insecure_skip_verify: true
+          # tls:
+          #   insecure_skip_verify: true
           mapping:
             mode: otel
         elasticsearch/ecs:
           endpoints:
           - ${env:ELASTIC_ENDPOINT}
           api_key: ${env:ELASTIC_API_KEY}
-          logs_dynamic_index:
-            enabled: true
-          tls:
-            insecure_skip_verify: true
+          # tls:
+          #   insecure_skip_verify: true
           mapping:
             mode: ecs
       processors:
