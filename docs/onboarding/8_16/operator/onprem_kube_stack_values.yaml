@@ -32,6 +32,8 @@ defaultCRConfig:
         secretKeyRef:
           name: elastic-secret-otel
           key: elastic_api_key
+
+# clusterName: kind
 collectors:
   cluster:
     config:
@@ -108,13 +110,6 @@ collectors:
                 key: app.kubernetes.io/component
                 from: pod
       receivers:
-        k8sobjects:
-          objects:
-            - name: events
-              mode: "watch"
-              group: "events.k8s.io"
-              exclude_watch_type:
-                - "DELETED"
         k8s_cluster:
           auth_type: serviceAccount
           node_conditions_to_report:
@@ -161,6 +156,10 @@ collectors:
             - debug
             - elasticsearch/otel
   daemon:
+    presets:
+      logsCollection:
+        enabled: true
+        storeCheckpoints: true
     hostNetwork: true
     securityContext:
       runAsUser: 0
