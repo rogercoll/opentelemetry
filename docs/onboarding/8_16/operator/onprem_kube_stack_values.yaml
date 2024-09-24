@@ -38,16 +38,21 @@ collectors:
       exporters:
         debug:
           verbosity: basic
-        elasticsearch:
+        elasticsearch/apm:
           endpoints:
           - ${env:ELASTIC_ENDPOINT}
           api_key: ${env:ELASTIC_API_KEY}
           mapping:
             mode: ecs
+        elasticsearch/otel:
+          endpoints:
+          - ${env:ELASTIC_ENDPOINT}
+          api_key: ${env:ELASTIC_API_KEY}
+          tls:
+            insecure_skip_verify: true
+          mapping:
+            mode: otel
       processors:
-        elasticinframetrics:
-          add_system_metrics: false
-          add_k8s_metrics: true
         resourcedetection/eks:
           detectors: [env, eks]
           timeout: 15s
@@ -136,9 +141,8 @@ collectors:
           metrics:
             exporters:
             - debug
-            - elasticsearch
+            - elasticsearch/otel
             processors:
-            - elasticinframetrics
             - k8sattributes
             - resourcedetection/eks
             - resourcedetection/gcp
@@ -155,7 +159,7 @@ collectors:
             - resourcedetection/aks
             exporters:
             - debug
-            - elasticsearch
+            - elasticsearch/otel
   daemon:
     hostNetwork: true
     securityContext:
@@ -166,12 +170,32 @@ collectors:
       exporters:
         debug:
           verbosity: basic
-        elasticsearch:
+        elasticsearch/apm:
           endpoints:
           - ${env:ELASTIC_ENDPOINT}
           api_key: ${env:ELASTIC_API_KEY}
           logs_dynamic_index:
             enabled: true
+          mapping:
+            mode: ecs
+        elasticsearch/otel:
+          endpoints:
+          - ${env:ELASTIC_ENDPOINT}
+          api_key: ${env:ELASTIC_API_KEY}
+          logs_dynamic_index:
+            enabled: true
+          tls:
+            insecure_skip_verify: true
+          mapping:
+            mode: otel
+        elasticsearch/ecs:
+          endpoints:
+          - ${env:ELASTIC_ENDPOINT}
+          api_key: ${env:ELASTIC_API_KEY}
+          logs_dynamic_index:
+            enabled: true
+          tls:
+            insecure_skip_verify: true
           mapping:
             mode: ecs
       processors:
@@ -433,8 +457,27 @@ collectors:
               - attributes/k8s_logs_dataset
             exporters:
               - debug
-              - elasticsearch
-          metrics/node:
+              - elasticsearch/otel
+          metrics/node/otel:
+            receivers:
+              - hostmetrics
+              - kubeletstats
+            processors:
+              # - elasticinframetrics
+              - batch
+              - k8sattributes
+              - resourcedetection/system
+              - resourcedetection/eks
+              - resourcedetection/gcp
+              - resourcedetection/aks
+              - resource/k8s
+              - resource/cloud
+              - attributes/dataset
+              - resource/process
+            exporters:
+              - debug
+              - elasticsearch/otel
+          metrics/node/ecs:
             receivers:
               - hostmetrics
               - kubeletstats
@@ -452,7 +495,7 @@ collectors:
               - resource/process
             exporters:
               - debug
-              - elasticsearch
+              - elasticsearch/ecs
           metrics/apm:
             receivers:
               - otlp
@@ -460,7 +503,7 @@ collectors:
               - batch
             exporters:
               - debug
-              - elasticsearch
+              - elasticsearch/apm
           logs/apm:
             receivers:
               - otlp
@@ -468,7 +511,7 @@ collectors:
               - batch
             exporters:
               - debug
-              - elasticsearch
+              - elasticsearch/apm
           traces/apm:
             receivers:
               - otlp
@@ -476,7 +519,7 @@ collectors:
               - batch
             exporters:
               - debug
-              - elasticsearch
+              - elasticsearch/apm
 
 instrumentation:
   enabled: true
