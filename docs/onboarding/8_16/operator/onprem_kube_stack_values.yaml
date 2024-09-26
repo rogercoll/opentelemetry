@@ -40,12 +40,6 @@ collectors:
       exporters:
         debug:
           verbosity: basic
-        elasticsearch/apm:
-          endpoints:
-          - ${env:ELASTIC_ENDPOINT}
-          api_key: ${env:ELASTIC_API_KEY}
-          mapping:
-            mode: ecs
         elasticsearch/otel:
           endpoints:
           - ${env:ELASTIC_ENDPOINT}
@@ -459,10 +453,8 @@ collectors:
               - elasticsearch/otel
           metrics/node/otel:
             receivers:
-              - hostmetrics
               - kubeletstats
             processors:
-              # - elasticinframetrics
               - batch
               - k8sattributes
               - resourcedetection/system
