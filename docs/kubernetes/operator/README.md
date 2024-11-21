@@ -140,16 +140,11 @@ Notes:
    - `YOUR_ELASTICSEARCH_ENDPOINT`: Elasticsearch endpoint (**with `https://` prefix**). For example: `https://1234567.us-west2.gcp.elastic-cloud.com:443`.
    - `YOUR_ELASTICSEARCH_API_KEY`: Elasticsearch API Key created in the previous step.
 
-3. If you need to [customize the configuration](#custom-configuration), make a copy of the `values.yaml` file and adapt it to your needs. Refer to the [compatibility matrix](#compatibility-matrix) for a complete list of available manifests in the `release branches`, such as the [8.16 values file](https://raw.githubusercontent.com/elastic/opentelemetry/refs/heads/8.16/resources/kubernetes/operator/helm/values.yaml). 
+3. If you need to [customize the configuration](#custom-configuration), make a copy of the `values.yaml` file and adapt it to your needs. Refer to the [compatibility matrix](#compatibility-matrix) for a complete list of available manifests in the `release branches`, such as the [8.16 values file](https://raw.githubusercontent.com/elastic/opentelemetry/refs/heads/8.16/resources/kubernetes/operator/helm/values.yaml).
 
 4. Run the following commands to deploy the `opentelemetry-kube-stack` Helm chart, using the appropriate values file:
 
-    ```bash
-    helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-    helm repo update
-    helm upgrade --install --namespace opentelemetry-operator-system opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack \
-          --values 'https://raw.githubusercontent.com/elastic/opentelemetry/refs/heads/8.16/resources/kubernetes/operator/helm/values.yaml' \
-          --version 0.3.3
+    ```{include} ./helm_commands.md
     ```
 
 ## Installation verification:
